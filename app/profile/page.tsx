@@ -22,9 +22,7 @@ export default function ProfilePage() {
 
   const getUserDetails = async () => {
     const res = await axios.get("/api/users/me");
-    console.log("8888888888888");
-    console.log("8888888888888");
-    console.log("8888888888888", res);
+
     setData(res.data.data._id);
   };
   return (
