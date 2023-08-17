@@ -3,14 +3,36 @@ import User from "@/models/userModel";
 import bcryptjs from "bcryptjs";
 
 export const sendEmail = async ({ email, emailType, userId }: any) => {
+  User.updateMany({})
+    .then(() => {
+      console.log("Data migration successful.");
+    })
+    .catch((error) => {
+      console.error("Data migration failed:", error);
+    });
   try {
     const hashedToken = await bcryptjs.hash(userId.toString(), 10);
+
+    console.log({ hashedToken, emailType });
+
     if (emailType === "VERIFY") {
-      await User.findByIdAndUpdate(
-        userId,
-        { verifyToken: hashedToken, verifyTokenExpiry: Date.now() + 3600000 },
-        { new: true, runValidators: true }
-      );
+      try {
+        // User.updateOne(
+        //   { _id: userId },
+        //   {
+        //     verifyToken: hashedToken,
+        //     verifyTokenExpiry: Date.now() + 3600000,
+        //   }
+        // )
+
+        const user = await User.findByIdAndUpdate(userId, {
+          verifyToken: hashedToken,
+          verifyTokenExpiry: Date.now() + 3600000,
+        });
+        console.log({ user });
+      } catch (error) {
+        console.log({ error });
+      }
     } else if (emailType === "REST") {
       await User.findByIdAndUpdate(
         userId,
