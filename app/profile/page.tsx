@@ -1,49 +1,58 @@
 "use client";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 export default function ProfilePage() {
-  const [user, setUser] = React.useState({
-    email: "",
-    password: "",
-  });
+  const [data, setData] = useState("");
+  const router = useRouter();
 
-  const handleLogin = () => {};
+  const logout = async () => {
+    try {
+      await axios.get("/api/users/logout");
+      toast.success("logout Successfully");
+      router.push("/login");
+    } catch (error: any) {
+      console.log({ error });
+      toast.error("some thing went wrong!");
+    }
+  };
+
+  const getUserDetails = async () => {
+    const res = await axios.get("/api/users/me");
+    console.log("8888888888888");
+    console.log("8888888888888");
+    console.log("8888888888888", res);
+    setData(res.data.data._id);
+  };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1>Login</h1>
+      <h1>profile</h1>
       <hr />
 
-      <label htmlFor="email">email</label>
-      <input
-        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
-        type="email"
-        name="email"
-        id="email"
-        value={user.email}
-        onChange={(e) => setUser({ ...user, email: e.target.value })}
-        placeholder="email"
-      />
-
-      <label htmlFor="password">password</label>
-      <input
-        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
-        type="password"
-        name="password"
-        id="password"
-        value={user.password}
-        onChange={(e) => setUser({ ...user, password: e.target.value })}
-        placeholder="password"
-      />
+      <p>profile page</p>
+      <h2 className="padding rounded bg-green-500">
+        {!data ? (
+          "not logged in"
+        ) : (
+          <Link href={`/profile/${data}`}>{data}</Link>
+        )}
+      </h2>
+      <hr />
       <button
-        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
-        onClick={handleLogin}
+        onClick={logout}
+        className="bg-blue-500 mt-4 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
-        login here
+        Logout
       </button>
-      <Link href="/signup">do not have an account, go to sign up</Link>
+      <button
+        onClick={getUserDetails}
+        className="bg-green-800 mt-4 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+      >
+        get data
+      </button>
     </div>
   );
 }
